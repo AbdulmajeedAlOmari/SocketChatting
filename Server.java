@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Server implements Runnable {  
-   private static final int MAX_NUMBER_OF_CLIENTS = 10;
+   private static final int MAX_NUMBER_OF_CLIENTS = 5;
 
    private ArrayList<ServerThread> clients = new ArrayList<>();
    private Thread thread = null;
@@ -61,12 +61,17 @@ public class Server implements Runnable {
       if (input.equals("!exit")) {
          // End connection with client
          if(client != null) {
-            client.send("Good bye, " + client.getID() + "!");
+            client.send("Good bye, " + client.getUsername() + "!");
             remove(clientId);
+            for (ServerThread element : clients) {
+               element.send(client.getUsername() + " has left the chat room");
+            }
          }
+      } else if (input.startsWith("!rename")) {
+         renameClient(client, input);
       } else {
          for (ServerThread element : clients) {
-            element.send(client.getID() + ": " + input);
+            element.send(client.getUsername() + ": " + input);
          }
       }
    }
@@ -121,6 +126,31 @@ public class Server implements Runnable {
       }
 
       return null;
+   }
+
+   /***
+   * renames the client
+   */
+   private void renameClient(ServerThread client, String input) {
+      String formattedInput = input.trim();
+
+      if (!formattedInput.startsWith("!rename ")) {
+         client.send("Sorry, usage: '!rename [new name]'.");
+         return;
+      } 
+
+      formattedInput = formattedInput.substring(8);
+
+      if (formattedInput.length() < 3 || formattedInput.length() > 24) {
+         client.send("Sorry, the new name must contain at least 3 characters and 24 characters at most.");
+         return;
+      }
+
+      String newUsername = formattedInput;
+
+      client.send("Successfully changed your username from '" 
+      + client.getUsername() + "' to '" + newUsername + "'.");
+      client.setUsername(newUsername);
    }
 }
 

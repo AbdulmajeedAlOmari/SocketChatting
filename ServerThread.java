@@ -7,6 +7,7 @@ public class ServerThread extends Thread {
    private DataOutputStream streamOut = null;
    private DataInputStream streamIn =  null;
    private int clientId = -1;
+   private String username = "Anonymous";
 
    public ServerThread(Server server, Socket socket) {  
       clientId = socket.getPort();
@@ -15,7 +16,7 @@ public class ServerThread extends Thread {
    }
 
    public void run() {
-      System.out.println("Server thread for the port (" + clientId + ") is running.");
+      System.out.println("Server thread for the client port (" + clientId + ") is running.");
       while (true) {  
          try {  
             server.handle(clientId, streamIn.readUTF());
@@ -52,6 +53,12 @@ public class ServerThread extends Thread {
       if (socket != null)    socket.close();
    }
 
+   // Setters / Getters
    public int getID() { return clientId; }
+   public String getUsername() { return username; }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
 }
 
