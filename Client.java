@@ -2,25 +2,24 @@ import java.net.*;
 import java.io.*;
 
 public class Client implements Runnable {  
-   private Socket socket              = null;
-   private Thread thread              = null;
-   private DataInputStream  console   = null;
+   private Socket socket = null;
+   private Thread thread = null;
+   private DataInputStream  console = null;
    private DataOutputStream streamOut = null;
-   private ClientThread client    = null;
+   private ClientThread client = null;
 
-   public static void main(String args[]) {  
-      Client client = null;
+   public static void main(String args[]) {
       if (args.length != 2)
          System.out.println("Usage: java Client [host name] [port number]");
       else
-         client = new Client(args[0], Integer.parseInt(args[1]));
+         new Client(args[0], Integer.parseInt(args[1]));
    }
 
    public Client(String serverName, int serverPort) {  
       System.out.println("Trying to connect to server...\nplease wait..");
       try {  
          socket = new Socket(serverName, serverPort);
-         System.out.println("Connected to the server:" + socket);
+         System.out.println("Connected to the server, full info:\n" + socket.toString());
          start();
       } catch(Exception e) {
          e.printStackTrace(); 
@@ -50,6 +49,7 @@ public class Client implements Runnable {
    public void start() throws Exception {  
       console = new DataInputStream(System.in);
       streamOut = new DataOutputStream(socket.getOutputStream());
+
       if (thread == null) {  
          client = new ClientThread(this, socket);
          thread = new Thread(this);                   
